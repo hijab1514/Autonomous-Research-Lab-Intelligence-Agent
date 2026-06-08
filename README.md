@@ -41,6 +41,11 @@ Most research tools solve the wrong problem. You search a topic, get a list of p
 
 ## Architecture
 
+
+<p align="center">
+  <img src="lacuna_architecture.png" alt="Architecture Diagram" width="100%">
+</p>
+
 ```
 lacuna/
 ├── agents/
