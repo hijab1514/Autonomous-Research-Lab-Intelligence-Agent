@@ -1,80 +1,143 @@
-# Lacuna
+<div align="center">
 
-Find the gaps, not just the papers.
+<h1>Lacuna</h1>
 
-Lacuna reads recent literature on any research topic, synthesizes the field's current state, and surfaces **grounded research gaps** — the open questions and underexplored directions worth pursuing. It is not a search engine.
+<p><strong>Find the gaps, not just the papers.</strong></p>
 
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+<p>A research intelligence platform that reads the literature, maps the field,<br/>and surfaces the unexplored opportunities worth pursuing.</p>
+
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://python.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/React-18-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=flat-square&logo=vite&logoColor=white)](https://vitejs.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)](LICENSE)
+[![No Key Required](https://img.shields.io/badge/No%20API%20Key-Required-blueviolet?style=flat-square)]()
+
+<br/>
+
+[Quick Start](#quick-start) · [How It Works](#how-it-works) · [API](#api-reference) · [Roadmap](#roadmap)
+
+</div>
 
 ---
 
-## How it works
+## What is Lacuna?
 
-1. **Retrieve** — pulls papers from OpenAlex and arXiv with relevance gating
-2. **Brief** — synthesizes consensus claims, active fronts, and contested questions
-3. **Gap** — identifies what the field has *not yet addressed*, anchored to real papers
+Most research tools solve the wrong problem. You search a topic, get a list of papers, read them — and still aren't sure what to *do next*.
 
-The full pipeline runs as a single `POST /api/analyze` call. Works with no API key out of the box; connect Gemini, Groq, or Ollama to upgrade from computed-signal gaps to written synthesis.
+**Lacuna is different.** It doesn't just find what's been done — it identifies what *hasn't*. It retrieves recent literature, synthesizes the field's current state, and surfaces **grounded research gaps**: open questions, underexplored directions, and overlooked intersections that represent real opportunities for original contribution.
 
 ---
 
-## Project structure
+## Key Features
+
+- 🔍 **Relevance-Gated Retrieval** — searches OpenAlex (250M+ works) and arXiv in parallel, filtering noise before it reaches analysis
+- 📋 **Field Briefing Engine** — generates a structured overview: dominant methods, active fronts, key debates, and emerging directions
+- 🕳️ **Grounded Gap Detection** — identifies what the field hasn't addressed yet, anchored to real papers — not hallucinated
+- 🤖 **Flexible AI Layer** — optionally deepen synthesis with Gemini, Groq, or a local Ollama model
+- ⚡ **Zero-Config Default** — fully functional gap detection with no API keys, no accounts, no setup beyond `pip install`
+
+---
+
+## Architecture
 
 ```
-agents/
-  literature_agent.py   relevance-gated retrieval (OpenAlex + arXiv)
-  research_llm.py       LLM abstraction (Gemini · Groq · Ollama · none)
-  gap_agent.py          gap & research direction engine
+lacuna/
+├── agents/
+│   ├── literature_agent.py   # Relevance-gated retrieval (OpenAlex + arXiv)
+│   ├── research_llm.py       # LLM abstraction (Gemini · Groq · Ollama · none)
+│   └── gap_agent.py          # Grounded gap & research direction engine
+│
+├── server/
+│   ├── main.py               # FastAPI: /api/health, /api/analyze
+│   └── requirements.txt
+│
+└── web/
+    └── src/
+        ├── App.jsx
+        ├── components/       # Search, Briefing, Gap panels
+        └── styles.css        # Design system tokens
+```
 
-server/
-  main.py               FastAPI — /api/health, /api/analyze
-  requirements.txt
+### Pipeline
 
-web/
-  src/
-    App.jsx
-    components/
-    styles.css          design tokens
+```
+Query → Literature Agent → Relevance Filter → Research LLM (optional)
+                                                      ↓
+                                               Gap Agent Engine
+                                          ┌─────────┴──────────┐
+                                   Computed Signals       LLM Synthesis
+                                   (no API key)          (with API key)
+                                          └─────────┬──────────┘
+                                                     ↓
+                                     Field Briefing + Gap Report
+                                       delivered via /api/analyze
 ```
 
 ---
 
-## Getting started
+## Quick Start
 
 **Requirements:** Python 3.10+, Node.js 18+
 
 ```bash
-# Backend
+# 1. Clone
+git clone https://github.com/your-username/lacuna.git
+cd lacuna
+
+# 2. Backend
 pip install -r server/requirements.txt
 uvicorn server.main:app --reload --port 8000
 
-# Frontend (separate terminal)
+# 3. Frontend (new terminal)
 cd web && npm install && npm run dev
 ```
 
-Open `http://localhost:5173`. No API key needed.
+Open **http://localhost:5173** — no API key needed.
 
 ---
 
 ## Configuration
 
-Copy `.env.example` to `.env` and add one key to enable AI synthesis. All three are free-tier compatible.
+Lacuna runs in **computed-signal mode** by default. To enable written AI synthesis, add one free key:
+
+```bash
+cp .env.example .env
+```
 
 ```env
-GEMINI_API_KEY=...   # or
-GROQ_API_KEY=...     # or
-OLLAMA_BASE_URL=http://localhost:11434
+GEMINI_API_KEY=...        # Google Gemini (free tier)
+GROQ_API_KEY=...          # Groq (free tier, fast)
+OLLAMA_BASE_URL=http://localhost:11434   # Local Ollama
 OLLAMA_MODEL=llama3
 ```
 
-Without a key, gap detection runs in computed-signal mode — structurally grounded, no external calls.
+| Mode | Key Required | Output |
+|---|---|---|
+| Computed Signal | None | Structural gaps from pattern analysis |
+| Gemini / Groq | One free key | Written, contextualized synthesis |
+| Ollama | Local install | Full synthesis, fully private |
+
+The server auto-detects which key is present at startup. No code changes needed.
 
 ---
 
-## API
+## How It Works
+
+**Stage 1 — Retrieval**
+`LiteratureAgent` queries OpenAlex and arXiv in parallel, scores results for relevance, and discards noise before anything reaches synthesis.
+
+**Stage 2 — Field Briefing**
+The retained papers are analyzed for consensus claims, active research fronts, contested questions, and dominant methodologies.
+
+**Stage 3 — Gap Detection**
+`GapAgent` scans the briefing for structural absence — patterns, populations, or methods consistently *unaddressed* in the literature. In computed-signal mode this is statistical; with an LLM key, gaps are written out as structured research directions with grounding.
+
+Everything runs as a single `POST /api/analyze` call.
+
+---
+
+## API Reference
 
 ### `GET /api/health`
 ```json
@@ -85,40 +148,76 @@ Without a key, gap detection runs in computed-signal mode — structurally groun
 
 ```json
 // Request
-{ "query": "transformer models in low-resource clinical NLP", "max_papers": 20 }
+{
+  "query": "transformer models in low-resource clinical NLP",
+  "max_papers": 20
+}
+```
 
+```json
 // Response
 {
-  "papers":   [ { "title": "...", "year": 2024, "source": "openalex", "url": "..." } ],
-  "briefing": { "consensus": "...", "active_fronts": "...", "contested": "..." },
-  "gaps":     [ { "title": "...", "description": "...", "opportunity_score": 0.84 } ],
-  "mode":     "computed_signal"
+  "papers": [
+    { "title": "...", "authors": ["..."], "year": 2024, "source": "openalex", "url": "..." }
+  ],
+  "briefing": {
+    "consensus": "...",
+    "active_fronts": "...",
+    "contested": "...",
+    "methods": "..."
+  },
+  "gaps": [
+    { "title": "...", "description": "...", "grounding": "...", "opportunity_score": 0.84 }
+  ],
+  "mode": "computed_signal"
 }
 ```
 
 ---
 
-## Known limitations
+## Tech Stack
 
-- **No persistence.** Reading list and recent queries live in React state — they reset on refresh. `localStorage` support is the next planned milestone.
-- **Free AI tier limits.** Gemini and Groq free tiers are fine for demos; not suitable for sustained production traffic.
-- **Bundle size.** Recharts triggers Vite's >500 kB chunk advisory. Harmless locally; code-split before deploying.
+| Layer | Technology |
+|---|---|
+| Frontend | React 18 + Vite |
+| Charts | Recharts |
+| Backend | FastAPI + Uvicorn |
+| Retrieval | OpenAlex API, arXiv API |
+| AI (optional) | Gemini · Groq · Ollama |
+| Validation | Pydantic v2 |
 
 ---
 
 ## Roadmap
 
-- [ ] `localStorage` / `/api/store` persistence
+- [ ] `localStorage` / `/api/store` persistence for reading list and recent queries
 - [ ] Export gap report as Markdown or PDF
 - [ ] Semantic Scholar as a third retrieval source
 - [ ] Topic clustering across retrieved papers
-- [ ] Docker image
+- [ ] Docker image for one-command deployment
+- [ ] Hosted demo environment
+
+---
+
+## Known Limitations
+
+| | |
+|---|---|
+| **No persistence** | Reading list and recent queries reset on page refresh. Planned for next milestone. |
+| **Free tier limits** | Gemini and Groq free tiers suit demos and prototyping — not sustained production traffic. |
+| **Bundle size** | Recharts triggers Vite's >500 kB chunk advisory. Harmless locally; code-split before deploying. |
 
 ---
 
 ## Contributing
 
-Issues and pull requests are welcome. Open an issue first for anything significant so we can align on direction.
+Issues and PRs are welcome. Please open an issue before starting significant work so we can align on direction.
+
+```bash
+git checkout -b feature/your-feature
+# make changes
+# open pull request
+```
 
 ---
 
