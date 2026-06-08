@@ -1,0 +1,3 @@
+# Backend = FastAPI wrapper around the stdlib agent engine.
+fastapi>=0.110
+uvicorn[standard]>=0.29
