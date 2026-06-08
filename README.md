@@ -29,16 +29,6 @@ Most research tools solve the wrong problem. You search a topic, get a list of p
 
 ---
 
-## Key Features
-
-- 🔍 **Relevance-Gated Retrieval** — searches OpenAlex (250M+ works) and arXiv in parallel, filtering noise before it reaches analysis
-- 📋 **Field Briefing Engine** — generates a structured overview: dominant methods, active fronts, key debates, and emerging directions
-- 🕳️ **Grounded Gap Detection** — identifies what the field hasn't addressed yet, anchored to real papers — not hallucinated
-- 🤖 **Flexible AI Layer** — optionally deepen synthesis with Gemini, Groq, or a local Ollama model
-- ⚡ **Zero-Config Default** — fully functional gap detection with no API keys, no accounts, no setup beyond `pip install`
-
----
-
 ## Architecture
 
 
